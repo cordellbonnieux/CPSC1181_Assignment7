@@ -30,7 +30,7 @@ public class Warehouse {
 	 */
 	public ArrayList<String> pickUp(String destination, int max) throws InterruptedException {
 		if (destination == null) {
-			throw new IllegalArgumentException("destination cannot be null");
+			throw new NullPointerException("destination cannot be null");
 		} else if (!crates.contains(destination)) {
 			throw new IllegalArgumentException("destination does not exist");
 		} else if (max < 1) {
@@ -67,9 +67,9 @@ public class Warehouse {
 	 */
 	public void deliver(ArrayList<String> delivery) {
 		if (delivery == null) {
-			throw new IllegalArgumentException("delivery array list cannot be null");
+			throw new NullPointerException("delivery array list cannot be null");
 		} else if (delivery.contains(null)) {
-			throw new IllegalArgumentException("delivery array list cannot contain null");
+			throw new NullPointerException("delivery array list cannot contain null");
 		}
 		
 		for (int i = 0; i < delivery.size(); i++) {
