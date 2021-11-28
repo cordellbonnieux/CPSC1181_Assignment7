@@ -1,5 +1,9 @@
 import java.util.ArrayList;
-
+/**
+ * Truck, used to transport crates from Warehouse to Warehouse.
+ * @author Cordell Bonnieux
+ *
+ */
 public class Truck implements Runnable {
 
 	private String name;
@@ -10,9 +14,9 @@ public class Truck implements Runnable {
 
 	/**
 	 * Class Constructor
-	 * @param source
-	 * @param destination
-	 * @param capacity
+	 * @param source Warehouse - a warehouse to pick up from
+	 * @param destination Warehouse - a warehouse to deliver to
+	 * @param capacity int - the maximum capacity of this truck
 	 */
 	public Truck(Warehouse source, Warehouse destination, int capacity) {
 		if (source == null || destination == null) {
@@ -69,6 +73,10 @@ public class Truck implements Runnable {
 				// do something
 			}
 		}
-		
+	}
+	
+	@Override
+	public String toString() {
+		return "Truck Name: " + this.name + ", crates: " + this.crates;
 	}
 }
