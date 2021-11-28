@@ -1,10 +1,23 @@
 import java.util.*;
-
+/**
+ * Factory Warehouse, this class represents a warehouse which produces crates. These crates can be be used in tandem
+ * with the parent class' methods in order to distribute them to other warehouses.
+ * @author Cordell Bonnieux
+ *
+ */
 public class FactoryWarehouse extends Warehouse implements Runnable {
 	private ArrayList<String> destinations;
 	private int produced;
 	private int send;
 	
+	/**
+	 * Class constructor
+	 * @param n String - this warehouse's name
+	 * @param m boolean - do the names of the crates need to match this warehouse's name to be stored here?
+	 * @param p int - the number of crates produced 
+	 * @param s int - the number of crates to be produced and sent
+	 * @param d ArrayList<String> - a list of destination warehouses, which represent which warehouses crates are produced for
+	 */
 	public FactoryWarehouse(String n, boolean m, int p, int s, ArrayList<String> d) {
 		super(n, m);
 		this.produced = p;
@@ -43,16 +56,3 @@ public class FactoryWarehouse extends Warehouse implements Runnable {
 		return String.format("name: %s, number of stored crates: %d, number of crates produced: %d", getName(), getCrateCount(), produced);
 	}
 }
-/*
-* make 3 for A
-* send A's
-* make 3 for B 
-* send B's
-* make 3 for A
-* etc
-* until it reaches this.send's value
-*
-*Exercise 3 the truck will need an arraylist of trucks 
-* it is not mentioned in the assignment pdf
-*
-*/

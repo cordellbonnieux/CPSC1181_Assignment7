@@ -1,5 +1,10 @@
 import java.util.ArrayList;
-
+/**
+ * Warehouse class, representing a warehouse which contains crates who have destinations. 
+ * Warehouses can dispatch crates by having delivery trucks call the pickUp method, and 
+ * deliveries can be received by Trucks using the deliver method.
+ * @author Cordell Bonnieux
+ */
 public class Warehouse {
 	private String name;
 	private ArrayList<String> crates;
@@ -31,9 +36,9 @@ public class Warehouse {
 	public ArrayList<String> pickUp(String destination, int max) throws InterruptedException {
 		if (destination == null) {
 			throw new NullPointerException("destination cannot be null");
-		} else if (!crates.contains(destination)) {
+		} /*else if (!crates.contains(destination)) {
 			throw new IllegalArgumentException("destination does not exist");
-		} else if (max < 1) {
+		} */else if (max < 1) {
 			throw new IllegalArgumentException("integer parameter cannot be less than 1");
 		}
 		
