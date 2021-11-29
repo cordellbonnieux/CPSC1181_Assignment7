@@ -18,11 +18,11 @@ public class FactoryWarehouse extends Warehouse implements Runnable {
 	 * @param s int - the number of crates to be produced and sent
 	 * @param d ArrayList<String> - a list of destination warehouses, which represent which warehouses crates are produced for
 	 */
-	public FactoryWarehouse(String n, boolean m, int p, int s, ArrayList<String> d) {
-		super(n, m);
-		this.produced = p;
-		this.send = s;
-		this.destinations = d;
+	public FactoryWarehouse(String name, ArrayList<String> destinations, int cratesToSend) {
+		super(name, false);
+		this.produced = 0;
+		this.send = cratesToSend;
+		this.destinations = destinations;
 	}
 
 	@Override
