@@ -28,37 +28,29 @@ public class FactoryWarehouse extends Warehouse implements Runnable {
 	@Override
 	public void run() {	
 		boolean on = true;
-		//int total = send * destinations.size();
 		while (send > 0 && on) {
-			
+			lock.lock();
 			int load = (send > 3) ? 3 : send;
-			
-			
-				lock.lock();
-				try {
-					for (int i = 0; i < destinations.size(); i++) {
-						ArrayList<String> parcels = new ArrayList<String>();
-						for (int y = 0; y < load; y++) {
-							parcels.add(destinations.get(i));
-							produced++;
-						}
-						this.deliver(parcels);
-						//total -= load;
+			try {
+				for (int i = 0; i < destinations.size(); i++) {
+					ArrayList<String> parcels = new ArrayList<String>();
+					for (int y = 0; y < load; y++) {
+						parcels.add(destinations.get(i));
+						produced++;
 					}
-					Thread.sleep(5000);
-				} catch (InterruptedException e)  {
-					System.out.println(e.getMessage());
-					System.out.println("Thread shutting down");
-					on = false;
-					//i = destinations.size(); // exits production all together, omit to continue with other destinations
-				} catch (NullPointerException e) {
-					System.out.println(e.getMessage());
-				} finally {
-					lock.unlock();
+					this.deliver(parcels);
 				}
-			
-			
-			send -= load;//(total/destinations.size());
+				send -= load;
+				Thread.sleep(5000);
+			} catch (InterruptedException e)  {
+				e.printStackTrace();
+				System.out.println(this.getName() + "'s thread shutting down");
+				on = false;
+			} catch (NullPointerException e) {
+				System.out.println(e.getMessage());
+			} finally {
+				lock.unlock();
+			}
 		}
 	}
 	

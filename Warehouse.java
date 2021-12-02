@@ -32,6 +32,9 @@ public class Warehouse {
 	
 	/**
 	 * Pick Up
+	 * This method removes param max number of crates from this.crates
+	 * and returns them. The method will wait to finish until param max
+	 * number of param destination crates are inside this.crates.
 	 * @param destination String the destination of the crate
 	 * @param max int the max number of pickups
 	 * @return ArrayList of Strings, the outgoing crates
@@ -43,38 +46,9 @@ public class Warehouse {
 		} else if (max < 1) {
 			throw new IllegalArgumentException("integer parameter cannot be less than 1");
 		}
-		
-		//System.out.println("first step! " + this.getName());
-		
-		// wait until enough crates are ready
-//		boolean ready = false;
-//		while (!ready) {
-//			int order = 0;
-//			for (int i = 0; i < crates.size(); i++) {
-//				if (crates.get(i) == destination) {
-//					order++;
-//				}
-//			}
-//			if (order >= max) {
-//				ready = true;
-//			} else {
-//				lock.lock();
-//				try {
-//					Thread.sleep(500);
-//				} finally {
-//					lock.unlock();
-//				}
-//				
-//			}
-//		}
-		
-		System.out.println("first step! " + this.getName());
-		
-		// local variables
+
 		ArrayList<String> outgoing = new ArrayList<String>();
 		ArrayList<Integer> outIndex = new ArrayList<Integer>();
-		
-		int removed = 0;
 		boolean waiting = true;
 		
 		while (waiting) {
@@ -109,29 +83,16 @@ public class Warehouse {
 				outgoing.add(crates.get(outIndex.get(i)));
 			}
 			crates.removeAll(outgoing);
-			
-			
-//			for (int i = 0; i < crates.size(); i++) {
-//				if (removed < max) {
-//					if (crates.get(i) == destination) {
-//						outgoing.add(crates.get(i));
-//						crates.remove(i);
-//						removed++;
-//					}	
-//				}
-//			}	
 		} finally {
 			lock.unlock();
 		}
-
-		
-		
-		System.out.println("last step! " + this.getName());
 		return outgoing;
 	}
 	
 	/**
 	 * Deliver
+	 * Receives a delivery of crates, the param string's contents are stored
+	 * into this.crates data member.
 	 * @param delivery ArrayList of Strings, representing incoming crates
 	 */
 	public void deliver(ArrayList<String> delivery) {
