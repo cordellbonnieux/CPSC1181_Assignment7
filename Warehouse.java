@@ -1,4 +1,6 @@
-import java.util.ArrayList;
+import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 /**
  * Warehouse class, representing a warehouse which contains crates who have destinations. 
  * Warehouses can dispatch crates by having delivery trucks call the pickUp method, and 
@@ -10,6 +12,7 @@ public class Warehouse {
 	private ArrayList<String> crates;
 	private boolean matchName;
 	private int errors;
+	private Lock lock;
 	
 	/**
 	 * Warehouse constructor
@@ -24,6 +27,7 @@ public class Warehouse {
 		this.matchName = m;
 		this.crates = new ArrayList<String>();
 		this.errors = 0;
+		this.lock = new ReentrantLock();
 	}
 	
 	/**
@@ -42,24 +46,41 @@ public class Warehouse {
 			throw new IllegalArgumentException("integer parameter cannot be less than 1");
 		}
 		
+		// wait until enough crates are ready
+		boolean ready = false;
+		while (!ready) {
+			int order = 0;
+			for (int i = 0; i < crates.size(); i++) {
+				if (crates.get(i) == destination) {
+					order++;
+				}
+			}
+			if (order >= max) {
+				ready = true;
+			} else {
+				Thread.sleep(500);
+			}
+		}
+		
 		// local variables
 		ArrayList<String> outgoing = new ArrayList<String>();
 		int removed = 0;
 		int total = crates.size();
 		
-		// wait till a crate is ready
-		while (!crates.contains(destination)) {
-			Thread.sleep(500);
-		}
-		
 		// remove crates
 		for (int i = 0; i < total; i++) {
 			if (removed < max) {
 				if (crates.get(i) == destination) {
-					outgoing.add(crates.get(i));
-					crates.remove(i);
-					i--;
-					total--;
+					lock.lock();
+					try {
+						outgoing.add(crates.get(i));
+						crates.remove(i);
+						i--;
+						total--;
+						removed++;
+					} finally {
+						lock.unlock();
+					}
 				}	
 			}
 		}

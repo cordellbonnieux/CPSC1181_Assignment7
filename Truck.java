@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.*;
 /**
  * Truck, used to transport crates from Warehouse to Warehouse.
  * @author Cordell Bonnieux

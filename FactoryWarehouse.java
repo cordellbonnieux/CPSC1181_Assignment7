@@ -31,11 +31,14 @@ public class FactoryWarehouse extends Warehouse implements Runnable {
 		while (send > 0 && on) {
 			int load = (send > 3) ? 3 : send;
 			for (int i = 0; i < destinations.size(); i++) {
+				// produce
 				ArrayList<String> parcels = new ArrayList<String>();
 				for (int y = 0; y < load; y++) {
 					parcels.add(destinations.get(i));
 					produced++;
 				}
+				// store and sleep for 5 sec
+				//  add lock
 				try {
 					this.deliver(parcels);
 					send -= load;
@@ -44,8 +47,11 @@ public class FactoryWarehouse extends Warehouse implements Runnable {
 					System.out.println(e.getMessage());
 					System.out.println("Thread shutting down");
 					on = false;
+					i = destinations.size(); // exits production all together, omit to continue with other destinations
 				} catch (NullPointerException e) {
 					System.out.println(e.getMessage());
+				} finally {
+					// release lock
 				}
 			}
 		}
