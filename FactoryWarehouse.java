@@ -35,7 +35,6 @@ public class FactoryWarehouse extends Warehouse implements Runnable {
 	public void run() {	
 		boolean on = true;
 		while (send > 0 && on) {
-			lock.lock();
 			int load = (send > 3) ? 3 : send;
 			try {
 				for (int i = 0; i < destinations.size(); i++) {
@@ -49,13 +48,11 @@ public class FactoryWarehouse extends Warehouse implements Runnable {
 				send -= load;
 				Thread.sleep(5000);
 			} catch (InterruptedException e)  {
-				e.printStackTrace();
 				System.out.println(this.getName() + "'s thread shutting down");
 				on = false;
+				Thread.currentThread().interrupt();
 			} catch (NullPointerException e) {
 				System.out.println(e.getMessage());
-			} finally {
-				lock.unlock();
 			}
 		}
 	}

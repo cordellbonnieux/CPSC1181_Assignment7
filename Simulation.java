@@ -47,6 +47,13 @@ public class Simulation {
 		}
 		
 		printWait(factory, warehouse1, warehouse2, warehouse3, truck1, truck2, truck3);
+		interruptAll(route1, route2, route3, factoryOnShift);
+	}
+	public static void interruptAll(Thread t1, Thread t2, Thread t3, Thread t4) {
+		t1.interrupt();
+		t2.interrupt();
+		t3.interrupt();
+		t4.interrupt();
 	}
 	
 	public static void printWait(FactoryWarehouse factory, Warehouse warehouse1, Warehouse warehouse2, Warehouse warehouse3, Truck truck1, Truck truck2, Truck truck3) {

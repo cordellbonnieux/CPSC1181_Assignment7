@@ -50,15 +50,22 @@ public class Truck implements Runnable {
 				destination.deliver(crates);
 				crates = new ArrayList<String>();
 			} catch (InterruptedException e) {
-				e.printStackTrace();
-				System.out.println(this.name + "'s thread is shutting down.");
+				System.out.println(this.getName() + "'s thread is shutting down.");
 				working = false;
+				Thread.currentThread().interrupt();
 			} catch (NullPointerException e) {
 				System.out.println(e.getMessage());
-				System.out.println(this.name + "'s thread is shutting down.");
+				System.out.println(this.getName() + "'s thread is shutting down.");
 				working = false;
 			}
 		}
+	}
+	
+	/**
+	 * Get Name
+	 */
+	public String getName() {
+		return this.name;
 	}
 	
 	@Override

@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 /**
@@ -12,7 +13,8 @@ public class Warehouse {
 	private ArrayList<String> crates;
 	private boolean matchName;
 	private int errors;
-	protected Lock lock;
+	private Lock lock;
+	private Condition busy;
 	
 	/**
 	 * Warehouse constructor
@@ -28,6 +30,7 @@ public class Warehouse {
 		this.crates = new ArrayList<String>();
 		this.errors = 0;
 		this.lock = new ReentrantLock();
+		this.busy = lock.newCondition();
 	}
 	
 	/**
@@ -46,44 +49,30 @@ public class Warehouse {
 		} else if (max < 1) {
 			throw new IllegalArgumentException("integer parameter cannot be less than 1");
 		}
-
+		lock.lock();	
 		ArrayList<String> outgoing = new ArrayList<String>();
-		ArrayList<Integer> outIndex = new ArrayList<Integer>();
 		boolean waiting = true;
-		
-		// Add Condition Object and .await()
-		while (waiting) {
-			int ready = 0;
-			lock.lock();
-			try {
+		try {
+			while (waiting) {
+				int ready = 0;
 				for (int i = 0; i < crates.size(); i++ ) {
-					if (crates.get(i) == destination) {
+					if (crates.get(i).contentEquals(destination) && ready < max) {
 						ready++;
-						outIndex.add(i);
+						outgoing.add(crates.get(i));
 					}
 				}
-			} finally {
-				lock.unlock();
-			}
-
-			if (ready >= max) {
-				waiting = false;
-			} else {
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e){
-					e.printStackTrace();
+				if (ready == max) {
+					waiting = false;
+					crates.removeAll(outgoing);
+				} else {
+					outgoing = new ArrayList<String>();
+					busy.await();
 				}
-				
 			}
-		}
-		
-		lock.lock();
-		try {
-			for (int i = 0; i < max; i++) {
-				outgoing.add(crates.get(outIndex.get(i)));
-			}
-			crates.removeAll(outgoing);
+		} catch (InterruptedException e) {
+			System.out.println(destination + "'s pickup thread is shutting down.");
+			Thread.currentThread().interrupt();
+			
 		} finally {
 			lock.unlock();
 		}
@@ -97,12 +86,11 @@ public class Warehouse {
 	 * @param delivery ArrayList of Strings, representing incoming crates
 	 */
 	public void deliver(ArrayList<String> delivery) {
-		if (delivery == null) {
+		if (delivery.equals(null)) {
 			throw new NullPointerException("delivery array list cannot be null");
 		} else if (delivery.contains(null)) {
 			throw new NullPointerException("delivery array list cannot contain null");
 		}
-		
 		for (int i = 0; i < delivery.size(); i++) {
 			if (matchName && name != delivery.get(i)) {
 				errors++;
@@ -110,6 +98,7 @@ public class Warehouse {
 			lock.lock();
 			try {
 				crates.add(delivery.get(i));
+				busy.signalAll();
 			} finally {
 				lock.unlock();
 			}
