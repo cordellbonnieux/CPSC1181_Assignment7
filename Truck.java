@@ -13,7 +13,6 @@ public class Truck implements Runnable {
 	private Warehouse destination;
 	private int capacity;
 	private ArrayList<String> crates; 
-	private Lock lock;
 
 	/**
 	 * Class Constructor
@@ -32,14 +31,12 @@ public class Truck implements Runnable {
 		this.capacity = capacity;
 		this.name = "Truck " + destination.getName();
 		this.crates = new ArrayList<String>();
-		this.lock = new ReentrantLock();
 	}
 	
 	@Override
 	public void run() {
 		boolean working = true;
 		while (working) {
-			lock.lock();
 			try {
 				// pick up
 				crates.addAll(source.pickUp(destination.getName(), capacity));
@@ -56,9 +53,7 @@ public class Truck implements Runnable {
 				System.out.println(e.getMessage());
 				System.out.println(this.name + "'s thread is shutting down.");
 				working = false;
-			} finally {
-				lock.unlock();
-			}	
+			}
 		}
 	}
 	
