@@ -1,4 +1,6 @@
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 /**
  * Truck, used to transport crates from Warehouse to Warehouse.
  * @author Cordell Bonnieux
@@ -11,6 +13,7 @@ public class Truck implements Runnable {
 	private Warehouse destination;
 	private int capacity;
 	private ArrayList<String> crates; 
+	private Lock lock;
 
 	/**
 	 * Class Constructor
@@ -29,6 +32,7 @@ public class Truck implements Runnable {
 		this.capacity = capacity;
 		this.name = "Truck " + destination.getName();
 		this.crates = new ArrayList<String>();
+		this.lock = new ReentrantLock();
 	}
 	
 	@Override
@@ -36,7 +40,9 @@ public class Truck implements Runnable {
 		boolean working = true;
 		while (working) {
 			// pick up crates
+			lock.lock();
 			try {
+				System.out.println("trying to pick up");
 				crates.addAll(source.pickUp(destination.getName(), capacity));
 			} catch (InterruptedException e) {
 				System.out.println(e.getMessage());
@@ -47,17 +53,21 @@ public class Truck implements Runnable {
 				System.out.println("Destination is null.\nThread is shutting down.");
 				working = false;
 			} finally {
-				// do something
+				lock.unlock();
 			}	
 			// drive 
+			lock.lock();
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				System.out.println(e.getMessage());
 				System.out.println(this.name + " sleep (driving time) interupted.\nThread shutting down.");
 				working = false;
+			} finally {
+				lock.unlock();
 			}
 			// deliver crates
+			lock.lock();
 			try {
 				destination.deliver(crates);
 				crates = new ArrayList<String>();
@@ -70,7 +80,7 @@ public class Truck implements Runnable {
 				System.out.println("Crates is null.\nThread is shutting down.");
 				working = false;
 			} finally {
-				// do something
+				lock.unlock();
 			}
 		}
 	}

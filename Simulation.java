@@ -35,7 +35,7 @@ public class Simulation {
 		 */
 	
 		
-		System.out.println(destinations);
+		//System.out.println(destinations);
 	}
 
 }

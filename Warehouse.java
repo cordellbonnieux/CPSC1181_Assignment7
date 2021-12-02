@@ -12,7 +12,7 @@ public class Warehouse {
 	private ArrayList<String> crates;
 	private boolean matchName;
 	private int errors;
-	private Lock lock;
+	protected Lock lock;
 	
 	/**
 	 * Warehouse constructor
@@ -46,6 +46,8 @@ public class Warehouse {
 			throw new IllegalArgumentException("integer parameter cannot be less than 1");
 		}
 		
+		System.out.println("first step! " + this.getName());
+		
 		// wait until enough crates are ready
 		boolean ready = false;
 		while (!ready) {
@@ -55,12 +57,24 @@ public class Warehouse {
 					order++;
 				}
 			}
+			
+			System.out.println(this.getName() + "'s current creates ready: " + order);
+			
+			
 			if (order >= max) {
 				ready = true;
 			} else {
-				Thread.sleep(500);
+				lock.lock();
+				try {
+					Thread.sleep(500);
+				} finally {
+					lock.unlock();
+				}
+				
 			}
 		}
+		
+		System.out.println("second step! " + this.getName());
 		
 		// local variables
 		ArrayList<String> outgoing = new ArrayList<String>();
@@ -78,12 +92,15 @@ public class Warehouse {
 						i--;
 						total--;
 						removed++;
+					} catch (IndexOutOfBoundsException e) {
+						System.out.println("woop there it is");
 					} finally {
 						lock.unlock();
 					}
 				}	
 			}
 		}
+		System.out.println("third step! " + this.getName());
 		return outgoing;
 	}
 	
@@ -102,7 +119,12 @@ public class Warehouse {
 			if (matchName && name != delivery.get(i)) {
 				errors++;
 			}
-			crates.add(delivery.get(i));
+			lock.lock();
+			try {
+				crates.add(delivery.get(i));
+			} finally {
+				lock.unlock();
+			}
 		}
 	}
 	

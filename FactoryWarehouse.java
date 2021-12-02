@@ -28,20 +28,21 @@ public class FactoryWarehouse extends Warehouse implements Runnable {
 	@Override
 	public void run() {	
 		boolean on = true;
+		//int total = send * destinations.size();
 		while (send > 0 && on) {
+			
 			int load = (send > 3) ? 3 : send;
+			
 			for (int i = 0; i < destinations.size(); i++) {
-				// produce
-				ArrayList<String> parcels = new ArrayList<String>();
-				for (int y = 0; y < load; y++) {
-					parcels.add(destinations.get(i));
-					produced++;
-				}
-				// store and sleep for 5 sec
-				//  add lock
+				lock.lock();
 				try {
+					ArrayList<String> parcels = new ArrayList<String>();
+					for (int y = 0; y < load; y++) {
+						parcels.add(destinations.get(i));
+						produced++;
+					}
 					this.deliver(parcels);
-					send -= load;
+					//total -= load;
 					Thread.sleep(5000);
 				} catch (InterruptedException e)  {
 					System.out.println(e.getMessage());
@@ -51,9 +52,11 @@ public class FactoryWarehouse extends Warehouse implements Runnable {
 				} catch (NullPointerException e) {
 					System.out.println(e.getMessage());
 				} finally {
-					// release lock
+					lock.unlock();
 				}
 			}
+			
+			send -= load;//(total/destinations.size());
 		}
 	}
 	
