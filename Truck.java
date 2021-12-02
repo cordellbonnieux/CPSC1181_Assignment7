@@ -39,49 +39,26 @@ public class Truck implements Runnable {
 	public void run() {
 		boolean working = true;
 		while (working) {
-			// pick up crates
 			lock.lock();
 			try {
-				System.out.println("trying to pick up");
+				// pick up
 				crates.addAll(source.pickUp(destination.getName(), capacity));
+				// drive 
+				Thread.sleep(1000);
+				// deliver
+				destination.deliver(crates);
+				crates = new ArrayList<String>();
 			} catch (InterruptedException e) {
-				System.out.println(e.getMessage());
-				System.out.println(this.name + " pick up interrupted.\nThread is shutting down.");
+				e.printStackTrace();
+				System.out.println(this.name + "'s thread is shutting down.");
 				working = false;
 			} catch (NullPointerException e) {
 				System.out.println(e.getMessage());
-				System.out.println("Destination is null.\nThread is shutting down.");
+				System.out.println(this.name + "'s thread is shutting down.");
 				working = false;
 			} finally {
 				lock.unlock();
 			}	
-			// drive 
-			lock.lock();
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				System.out.println(e.getMessage());
-				System.out.println(this.name + " sleep (driving time) interupted.\nThread shutting down.");
-				working = false;
-			} finally {
-				lock.unlock();
-			}
-			// deliver crates
-			lock.lock();
-			try {
-				destination.deliver(crates);
-				crates = new ArrayList<String>();
-			} /*catch (InterruptedException e) {
-				System.out.println(e.getMessage());
-				System.out.println(this.name + " delivery interrupted.\nThread is shutting down.");
-				working = false;
-			} */catch (NullPointerException e) {
-				System.out.println(e.getMessage());
-				System.out.println("Crates is null.\nThread is shutting down.");
-				working = false;
-			} finally {
-				lock.unlock();
-			}
 		}
 	}
 	

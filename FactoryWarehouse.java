@@ -33,28 +33,30 @@ public class FactoryWarehouse extends Warehouse implements Runnable {
 			
 			int load = (send > 3) ? 3 : send;
 			
-			for (int i = 0; i < destinations.size(); i++) {
+			
 				lock.lock();
 				try {
-					ArrayList<String> parcels = new ArrayList<String>();
-					for (int y = 0; y < load; y++) {
-						parcels.add(destinations.get(i));
-						produced++;
+					for (int i = 0; i < destinations.size(); i++) {
+						ArrayList<String> parcels = new ArrayList<String>();
+						for (int y = 0; y < load; y++) {
+							parcels.add(destinations.get(i));
+							produced++;
+						}
+						this.deliver(parcels);
+						//total -= load;
 					}
-					this.deliver(parcels);
-					//total -= load;
 					Thread.sleep(5000);
 				} catch (InterruptedException e)  {
 					System.out.println(e.getMessage());
 					System.out.println("Thread shutting down");
 					on = false;
-					i = destinations.size(); // exits production all together, omit to continue with other destinations
+					//i = destinations.size(); // exits production all together, omit to continue with other destinations
 				} catch (NullPointerException e) {
 					System.out.println(e.getMessage());
 				} finally {
 					lock.unlock();
 				}
-			}
+			
 			
 			send -= load;//(total/destinations.size());
 		}

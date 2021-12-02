@@ -40,67 +40,93 @@ public class Warehouse {
 	public ArrayList<String> pickUp(String destination, int max) throws InterruptedException {
 		if (destination == null) {
 			throw new NullPointerException("destination cannot be null");
-		} /*else if (!crates.contains(destination)) {
-			throw new IllegalArgumentException("destination does not exist");
-		} */else if (max < 1) {
+		} else if (max < 1) {
 			throw new IllegalArgumentException("integer parameter cannot be less than 1");
 		}
 		
-		System.out.println("first step! " + this.getName());
+		//System.out.println("first step! " + this.getName());
 		
 		// wait until enough crates are ready
-		boolean ready = false;
-		while (!ready) {
-			int order = 0;
-			for (int i = 0; i < crates.size(); i++) {
-				if (crates.get(i) == destination) {
-					order++;
+//		boolean ready = false;
+//		while (!ready) {
+//			int order = 0;
+//			for (int i = 0; i < crates.size(); i++) {
+//				if (crates.get(i) == destination) {
+//					order++;
+//				}
+//			}
+//			if (order >= max) {
+//				ready = true;
+//			} else {
+//				lock.lock();
+//				try {
+//					Thread.sleep(500);
+//				} finally {
+//					lock.unlock();
+//				}
+//				
+//			}
+//		}
+		
+		System.out.println("first step! " + this.getName());
+		
+		// local variables
+		ArrayList<String> outgoing = new ArrayList<String>();
+		ArrayList<Integer> outIndex = new ArrayList<Integer>();
+		
+		int removed = 0;
+		boolean waiting = true;
+		
+		while (waiting) {
+			int ready = 0;
+			lock.lock();
+			try {
+				for (int i = 0; i < crates.size(); i++ ) {
+					if (crates.get(i) == destination) {
+						ready++;
+						outIndex.add(i);
+					}
 				}
+			} finally {
+				lock.unlock();
 			}
-			
-			System.out.println(this.getName() + "'s current creates ready: " + order);
-			
-			
-			if (order >= max) {
-				ready = true;
+
+			if (ready >= max) {
+				waiting = false;
 			} else {
-				lock.lock();
 				try {
 					Thread.sleep(500);
-				} finally {
-					lock.unlock();
+				} catch (InterruptedException e){
+					e.printStackTrace();
 				}
 				
 			}
 		}
 		
-		System.out.println("second step! " + this.getName());
-		
-		// local variables
-		ArrayList<String> outgoing = new ArrayList<String>();
-		int removed = 0;
-		int total = crates.size();
-		
-		// remove crates
-		for (int i = 0; i < total; i++) {
-			if (removed < max) {
-				if (crates.get(i) == destination) {
-					lock.lock();
-					try {
-						outgoing.add(crates.get(i));
-						crates.remove(i);
-						i--;
-						total--;
-						removed++;
-					} catch (IndexOutOfBoundsException e) {
-						System.out.println("woop there it is");
-					} finally {
-						lock.unlock();
-					}
-				}	
+		lock.lock();
+		try {
+			for (int i = 0; i < max; i++) {
+				outgoing.add(crates.get(outIndex.get(i)));
 			}
+			crates.removeAll(outgoing);
+			
+			
+//			for (int i = 0; i < crates.size(); i++) {
+//				if (removed < max) {
+//					if (crates.get(i) == destination) {
+//						outgoing.add(crates.get(i));
+//						crates.remove(i);
+//						removed++;
+//					}	
+//				}
+//			}	
+		} finally {
+			lock.unlock();
 		}
-		System.out.println("third step! " + this.getName());
+
+		
+		
+		System.out.println("last step! " + this.getName());
 		return outgoing;
 	}
 	
