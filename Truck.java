@@ -1,6 +1,5 @@
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Truck, used to transport crates from Warehouse to Warehouse.
  * @author Cordell Bonnieux
@@ -33,6 +32,11 @@ public class Truck implements Runnable {
 		this.crates = new ArrayList<String>();
 	}
 	
+	/**
+	 * Run
+	 * this Truck picks up this.capacity amount of crates from this.source and 
+	 * delivers them to this.destination. Both destination and source are Warehouses.
+	 */
 	@Override
 	public void run() {
 		boolean working = true;

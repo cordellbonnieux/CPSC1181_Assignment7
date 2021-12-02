@@ -25,6 +25,12 @@ public class FactoryWarehouse extends Warehouse implements Runnable {
 		this.destinations = destinations;
 	}
 
+	/**
+	 * Run
+	 * As long as this.send is greater than 3, this FactoryWarehouse produces 3  "crates"
+	 * per this.destinations, if send is 2 or 1, then that many crates will be created.
+	 * After each batch of crates is created they are stored and the method rests for 5 seconds.
+	 */
 	@Override
 	public void run() {	
 		boolean on = true;

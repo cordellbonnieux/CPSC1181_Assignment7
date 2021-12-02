@@ -51,6 +51,7 @@ public class Warehouse {
 		ArrayList<Integer> outIndex = new ArrayList<Integer>();
 		boolean waiting = true;
 		
+		// Add Condition Object and .await()
 		while (waiting) {
 			int ready = 0;
 			lock.lock();

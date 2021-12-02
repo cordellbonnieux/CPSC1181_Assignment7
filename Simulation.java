@@ -47,7 +47,6 @@ public class Simulation {
 		}
 		
 		printWait(factory, warehouse1, warehouse2, warehouse3, truck1, truck2, truck3);
-		//System.out.println(destinations);
 	}
 	
 	public static void printWait(FactoryWarehouse factory, Warehouse warehouse1, Warehouse warehouse2, Warehouse warehouse3, Truck truck1, Truck truck2, Truck truck3) {
