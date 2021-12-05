@@ -44,13 +44,20 @@ public class Simulation {
 		while (debug) {
 			printWait(factory, warehouse1, warehouse2, warehouse3, truck1, truck2, truck3);
 			debug = (warehouse1.getCrateCount() >= PRODUCTION && warehouse2.getCrateCount() >= PRODUCTION && warehouse3.getCrateCount() >= PRODUCTION) ? false : true;
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			if (!debug) {
+				printWait(factory, warehouse1, warehouse2, warehouse3, truck1, truck2, truck3);
+			}
 		}
 		
-		printWait(factory, warehouse1, warehouse2, warehouse3, truck1, truck2, truck3);
-		
 		/*
-		 * I made this method because Thread.currentThread().interrupt()
+		 * Thread.currentThread().interrupt()
 		 * was not always shutting down the main thread/thread0 (only sometimes).
+		 * So, I am interrupting them individually
 		 */
 		route1.interrupt();
 		route2.interrupt();
